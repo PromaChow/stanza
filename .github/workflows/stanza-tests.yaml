@@ -2,7 +2,7 @@ name: Run Stanza Tests
 on:
   push:
     branches:
-      - main
+      - new
 
 jobs:
   Run-Stanza-Tests:
@@ -29,8 +29,7 @@ jobs:
           json-output: true
           label: Step
           task: get-measurement
-      - run: "echo \"\U0001F50E The name of your branch is ${{ github.ref }} and your\
-          \ repository is ${{ github.repository }}.\""
+      - run: "echo \U0001F50E The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - id: measurement-6
         name: Record Measurement After Step
         uses: green-coding-solutions/eco-ci-energy-estimation@862050e4f01f65b1436e5eca18ba4bd85562f0de
