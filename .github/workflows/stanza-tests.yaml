@@ -6,7 +6,7 @@ on:
 
 jobs:
   Run-Stanza-Tests:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - name: Start Energy Measurement
         uses: green-coding-solutions/eco-ci-energy-estimation@862050e4f01f65b1436e5eca18ba4bd85562f0de
