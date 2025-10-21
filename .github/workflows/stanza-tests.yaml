@@ -1,43 +1,140 @@
 name: Run Stanza Tests
-on: [push]
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   Run-Stanza-Tests:
     runs-on: self-hosted
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Start Energy Measurement
+        uses: green-coding-solutions/eco-ci-energy-estimation@862050e4f01f65b1436e5eca18ba4bd85562f0de
+        with:
+          json-output: true
+          task: start-measurement
+      - run: "echo \U0001F389 The job was automatically triggered by a ${{ github.event_name\ }} event"
+      - id: measurement-2
+        name: Record Measurement After Step
+        uses: green-coding-solutions/eco-ci-energy-estimation@862050e4f01f65b1436e5eca18ba4bd85562f0de
+        with:
+          json-output: true
+          label: Step
+          task: get-measurement
+      - run: "echo \U0001F427 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - id: measurement-4
+        name: Record Measurement After Step
+        uses: green-coding-solutions/eco-ci-energy-estimation@862050e4f01f65b1436e5eca18ba4bd85562f0de
+        with:
+          json-output: true
+          label: Step
+          task: get-measurement
+      - run: "echo \"\U0001F50E The name of your branch is ${{ github.ref }} and your\
+          \ repository is ${{ github.repository }}.\""
+      - id: measurement-6
+        name: Record Measurement After Step
+        uses: green-coding-solutions/eco-ci-energy-estimation@862050e4f01f65b1436e5eca18ba4bd85562f0de
+        with:
+          json-output: true
+          label: Step
+          task: get-measurement
       - name: Check out repository code
         uses: actions/checkout@v2
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - run: "echo \U0001F4A1 The ${{ github.repository }} repository has been cloned to the runner."
+      - id: measurement-9
+        name: Record Measurement After Step
+        uses: green-coding-solutions/eco-ci-energy-estimation@862050e4f01f65b1436e5eca18ba4bd85562f0de
+        with:
+          json-output: true
+          label: Step
+          task: get-measurement
+      - run: "echo \U0001F5A5\uFE0F The workflow is now ready to test your code on the runner."
+      - id: measurement-11
+        name: Record Measurement After Step
+        uses: green-coding-solutions/eco-ci-energy-estimation@862050e4f01f65b1436e5eca18ba4bd85562f0de
+        with:
+          json-output: true
+          label: Step
+          task: get-measurement
       - name: Run Stanza Tests
-        run: |
-          # set up environment
+        run: '# set up environment
+
           echo "Setting up environment..."
+
           bash
+
           #. $CONDA_PREFIX/etc/profile.d/conda.sh
+
           . /home/stanzabuild/miniconda3/etc/profile.d/conda.sh
+
           conda activate stanza
+
           export STANZA_TEST_HOME=/scr/stanza_test
+
           export CORENLP_HOME=$STANZA_TEST_HOME/corenlp_dir
+
           export CLASSPATH=$CORENLP_HOME/*:
+
           echo CORENLP_HOME=$CORENLP_HOME
+
           echo CLASSPATH=$CLASSPATH
+
           # install from stanza repo being evaluated
+
           echo PWD: $pwd
+
           echo PATH: $PATH
+
           pip3 install -e .
+
           pip3 install -e .[test]
+
           pip3 install -e .[transformers]
+
           pip3 install -e .[tokenizers]
+
           # set up for tests
+
           echo "Running stanza test set up..."
+
           rm -rf $STANZA_TEST_HOME
+
           python3 stanza/tests/setup.py
+
           # run tests
+
           echo "Running tests..."
+
           export CUDA_VISIBLE_DEVICES=2
+
           pytest stanza/tests
-          
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+
+          '
+      - id: measurement-13
+        name: Record Measurement After Run Stanza Tests
+        uses: green-coding-solutions/eco-ci-energy-estimation@862050e4f01f65b1436e5eca18ba4bd85562f0de
+        with:
+          json-output: true
+          label: Run Stanza Tests
+          task: get-measurement
+      - run: "echo \U0001F34F This job's status is ${{ job.status }}."
+      - id: measurement-15
+        name: Record Measurement After Step
+        uses: green-coding-solutions/eco-ci-energy-estimation@862050e4f01f65b1436e5eca18ba4bd85562f0de
+        with:
+          json-output: true
+          label: Step
+          task: get-measurement
+      - id: display-measurement
+        name: Display Energy Results
+        uses: green-coding-solutions/eco-ci-energy-estimation@862050e4f01f65b1436e5eca18ba4bd85562f0de
+        with:
+          json-output: true
+          task: display-results
+      - name: Save Total Energy Consumption Data
+        run: echo '${{ steps.final-measurement.outputs.data-total-json }}' > total_energy_consumption.json
+      - name: Upload Energy Consumption Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: total-energy-consumption
+          path: total_energy_consumption.json
